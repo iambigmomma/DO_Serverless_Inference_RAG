@@ -1,0 +1,92 @@
+[
+  {
+    "_id": "T001",
+    "ticket_id": "T001",
+    "title": "Login Issues",
+    "description": "User cannot log into their account. Password reset not working.",
+    "category": "Authentication",
+    "priority": "High",
+    "status": "Open"
+  },
+  {
+    "_id": "T002",
+    "ticket_id": "T002",
+    "title": "Payment Processing Error",
+    "description": "Credit card payment fails during checkout process. Error code 500.",
+    "category": "Payment",
+    "priority": "Critical",
+    "status": "In Progress"
+  },
+  {
+    "_id": "T003",
+    "ticket_id": "T003",
+    "title": "Feature Request - Dark Mode",
+    "description": "Users requesting dark mode theme for better user experience.",
+    "category": "Feature Request",
+    "priority": "Low",
+    "status": "Open"
+  },
+  {
+    "_id": "T004",
+    "ticket_id": "T004",
+    "title": "Database Connection Timeout",
+    "description": "Application experiencing database connection timeouts during peak hours.",
+    "category": "Technical",
+    "priority": "High",
+    "status": "Open"
+  },
+  {
+    "_id": "T005",
+    "ticket_id": "T005",
+    "title": "Mobile App Crash",
+    "description": "iOS app crashes when uploading large files. Occurs on iPhone 12 and newer.",
+    "category": "Mobile",
+    "priority": "Medium",
+    "status": "Open"
+  },
+  {
+    "_id": "T006",
+    "ticket_id": "T006",
+    "title": "Email Notification Not Working",
+    "description": "Users not receiving email notifications for password reset and account updates.",
+    "category": "Email",
+    "priority": "Medium",
+    "status": "Open"
+  },
+  {
+    "_id": "T007",
+    "ticket_id": "T007",
+    "title": "API Rate Limiting Issues",
+    "description": "Third-party integrations hitting rate limits causing service disruptions.",
+    "category": "Integration",
+    "priority": "High",
+    "status": "In Progress"
+  },
+  {
+    "_id": "T008",
+    "ticket_id": "T008",
+    "title": "Security Vulnerability Report",
+    "description": "Potential XSS vulnerability found in user input fields. Needs immediate attention.",
+    "category": "Security",
+    "priority": "Critical",
+    "status": "Open"
+  },
+  {
+    "_id": "T009",
+    "ticket_id": "T009",
+    "title": "UI Layout Issues on Mobile",
+    "description": "Mobile interface elements overlapping on smaller screen sizes.",
+    "category": "UI/UX",
+    "priority": "Medium",
+    "status": "Open"
+  },
+  {
+    "_id": "T010",
+    "ticket_id": "T010",
+    "title": "Data Export Feature Request",
+    "description": "Users requesting ability to export their data in CSV format.",
+    "category": "Feature Request",
+    "priority": "Low",
+    "status": "Open"
+  }
+]

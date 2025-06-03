@@ -1,0 +1,137 @@
+[
+  {
+    "_id": "T011",
+    "ticket_id": "T011",
+    "title": "Two-Factor Authentication Setup",
+    "description": "User unable to set up 2FA. QR code not scanning properly on mobile devices.",
+    "category": "Authentication",
+    "priority": "Medium",
+    "status": "Open"
+  },
+  {
+    "_id": "T012",
+    "ticket_id": "T012",
+    "title": "Subscription Billing Error",
+    "description": "Monthly subscription charge failed. Customer's card was declined multiple times.",
+    "category": "Payment",
+    "priority": "High",
+    "status": "Open"
+  },
+  {
+    "_id": "T013",
+    "ticket_id": "T013",
+    "title": "Server Performance Degradation",
+    "description": "Application response time increased significantly during peak hours. Database queries taking too long.",
+    "category": "Technical",
+    "priority": "Critical",
+    "status": "In Progress"
+  },
+  {
+    "_id": "T014",
+    "ticket_id": "T014",
+    "title": "Android App Login Loop",
+    "description": "Android users experiencing infinite login loop. App keeps asking for credentials.",
+    "category": "Mobile",
+    "priority": "High",
+    "status": "Open"
+  },
+  {
+    "_id": "T015",
+    "ticket_id": "T015",
+    "title": "Bulk Data Import Feature",
+    "description": "Enterprise customers need ability to import large datasets via CSV upload.",
+    "category": "Feature Request",
+    "priority": "Medium",
+    "status": "Open"
+  },
+  {
+    "_id": "T016",
+    "ticket_id": "T016",
+    "title": "Data Breach Investigation",
+    "description": "Suspicious login attempts detected from multiple IP addresses. Potential security breach.",
+    "category": "Security",
+    "priority": "Critical",
+    "status": "In Progress"
+  },
+  {
+    "_id": "T017",
+    "ticket_id": "T017",
+    "title": "Email Delivery Delays",
+    "description": "Transactional emails experiencing significant delays. Some emails not delivered at all.",
+    "category": "Email",
+    "priority": "High",
+    "status": "Open"
+  },
+  {
+    "_id": "T018",
+    "ticket_id": "T018",
+    "title": "Dashboard Loading Issues",
+    "description": "Main dashboard takes over 30 seconds to load. Charts and graphs not rendering properly.",
+    "category": "UI/UX",
+    "priority": "Medium",
+    "status": "Open"
+  },
+  {
+    "_id": "T019",
+    "ticket_id": "T019",
+    "title": "API Integration Timeout",
+    "description": "Third-party API calls timing out after 30 seconds. Affecting payment processing workflow.",
+    "category": "Integration",
+    "priority": "High",
+    "status": "Open"
+  },
+  {
+    "_id": "T020",
+    "ticket_id": "T020",
+    "title": "Database Backup Failure",
+    "description": "Automated database backup failed for the past 3 days. Manual backup also failing.",
+    "category": "Data",
+    "priority": "Critical",
+    "status": "Open"
+  },
+  {
+    "_id": "T021",
+    "ticket_id": "T021",
+    "title": "GDPR Compliance Request",
+    "description": "Customer requesting data deletion under GDPR right to be forgotten.",
+    "category": "Legal",
+    "priority": "Medium",
+    "status": "Open"
+  },
+  {
+    "_id": "T022",
+    "ticket_id": "T022",
+    "title": "Screen Reader Compatibility",
+    "description": "Website not compatible with screen readers. Accessibility issues for visually impaired users.",
+    "category": "Accessibility",
+    "priority": "Medium",
+    "status": "Open"
+  },
+  {
+    "_id": "T023",
+    "ticket_id": "T023",
+    "title": "Customer Support Chat Bot",
+    "description": "Request for AI-powered chatbot to handle basic customer inquiries automatically.",
+    "category": "Feature Request",
+    "priority": "Low",
+    "status": "Open"
+  },
+  {
+    "_id": "T024",
+    "ticket_id": "T024",
+    "title": "Account Suspension Appeal",
+    "description": "User account suspended due to suspicious activity. Customer claims account was compromised.",
+    "category": "Support",
+    "priority": "High",
+    "status": "Open"
+  },
+  {
+    "_id": "T025",
+    "ticket_id": "T025",
+    "title": "Password Policy Update",
+    "description": "Current password policy too weak. Need to implement stronger requirements and MFA.",
+    "category": "Security",
+    "priority": "Medium",
+    "status": "Open"
+  }
+]
