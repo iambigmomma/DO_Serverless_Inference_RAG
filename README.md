@@ -1,21 +1,25 @@
 # Serverless Inference RAG Demo
 
-A comprehensive Retrieval-Augmented Generation (RAG) demo using MongoDB Atlas Vector Search and DigitalOcean's GenAI Platform for intelligent support ticket processing.
+A comprehensive multi-provider RAG demo showcasing enterprise-grade AI integration with MongoDB Atlas Vector Search, DigitalOcean's Gradient AI Platform, and Cohere's advanced re-ranking capabilities for intelligent support ticket processing.
 
 ## Features
 
-- **Vector Search**: Semantic search using MongoDB Atlas Vector Search
-- **Multiple Re-ranking Methods**: Semantic, LLM-based, and hybrid re-ranking
-- **Support Ticket Processing**: Realistic customer support ticket data
-- **Interactive Demo**: Command-line interface for testing different functionalities
-- **Flexible Data Management**: JSON-based sample data for easy customization
+- **🏢 Multi-Provider Architecture**: Seamlessly integrates multiple AI service providers
+- **📊 Vector Search**: Semantic search using MongoDB Atlas Vector Search with embeddings
+- **🎯 Advanced Re-ranking**: Cohere's state-of-the-art rerank-v3.5 model for superior relevance
+- **🤖 LLM Integration**: DigitalOcean Gradient AI Platform with Llama 3 models
+- **🔍 Simple Comparison**: Clear before/after comparison of search quality with re-ranking
+- **🎫 Support Ticket Processing**: Realistic customer support ticket data scenarios
+- **💻 Interactive Demo**: Command-line interface for testing different AI functionalities
+- **📁 Flexible Data Management**: JSON-based sample data for easy customization
 
 ## Prerequisites
 
 - Python 3.8+
-- MongoDB Atlas account with Vector Search enabled
-- DigitalOcean GenAI Platform API key
-- OpenAI API key
+- **MongoDB Atlas** account with Vector Search enabled
+- **DigitalOcean Gradient AI Platform** API key
+- **Cohere** API key for advanced re-ranking
+- **OpenAI** API key (optional, for embeddings)
 
 ## Installation
 
@@ -37,7 +41,7 @@ A comprehensive Retrieval-Augmented Generation (RAG) demo using MongoDB Atlas Ve
    Create a `.env` file in the root directory:
 
    ```env
-   DO_GENAI_KEY=your_digitalocean_genai_api_key_here
+   DO_GENAI_KEY=your_digitalocean_gradient_ai_api_key_here
    MONGODB_URI=your_mongodb_atlas_connection_string_here
    OPENAI_API_KEY=your_openai_api_key_here
    ```
@@ -118,10 +122,10 @@ python demo.py
 
 The demo provides the following options:
 
-1. **Test Endpoint Connections**: Verify all service connections
-2. **Data Ingestion**: Load sample data with embeddings
-3. **RAG Query Demo**: Test semantic search and answer generation
-4. **Re-ranking Demo**: Compare different re-ranking methods
+1. **Test Endpoint Connections**: Verify all AI service connections (MongoDB, DigitalOcean Gradient AI, Cohere, OpenAI)
+2. **Data Ingestion**: Load sample data with automatic embedding generation
+3. **RAG Query Demo**: Test semantic search and AI-powered answer generation
+4. **Re-ranking Comparison Demo**: Compare Vector Search vs Cohere re-ranking side-by-side
 5. **Display Vector Index Config**: Show MongoDB Vector Search configuration
 6. **Exit**: Close the application
 
@@ -162,9 +166,9 @@ Serverless_Inference_RAG/
 
 ## API Keys Setup
 
-### DigitalOcean GenAI Platform
+### DigitalOcean Gradient AI Platform
 
-1. Sign up for DigitalOcean GenAI Platform
+1. Sign up for [DigitalOcean Gradient AI Platform](https://cloud.digitalocean.com/gen-ai)
 2. Generate an API key
 3. Add it to your `.env` file as `DO_GENAI_KEY`
 
@@ -216,7 +220,8 @@ For questions or issues, please:
 
 ## Acknowledgments
 
-- MongoDB Atlas for Vector Search capabilities
-- DigitalOcean GenAI Platform for LLM services
-- OpenAI for embedding generation
+- **MongoDB Atlas** for enterprise-grade Vector Search capabilities
+- **DigitalOcean Gradient AI Platform** for scalable LLM inference services
+- **Cohere** for state-of-the-art semantic re-ranking technology
+- **OpenAI** for high-quality embedding generation
 - The open-source community for various Python packages used in this project

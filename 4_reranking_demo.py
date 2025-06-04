@@ -1,20 +1,25 @@
-# 4_reranking_demo.py - Re-ranking Demo
+# 4_reranking_demo.py - Re-ranking Demo Script
 import os
 import sys
-import math
-from typing import List, Dict, Tuple
+from typing import List, Dict
 from openai import OpenAI
 from pymongo import MongoClient
 from dotenv import load_dotenv
+from cohere import ClientV2 as CohereClient
 
 # Load environment variables
 load_dotenv()
 
 DO_GENAI_KEY = os.getenv("DO_GENAI_KEY")
 MONGODB_URI = os.getenv("MONGODB_URI")
+COHERE_API_KEY = os.getenv("COHERE_API_KEY")
 
 if not DO_GENAI_KEY or not MONGODB_URI:
     print("❌ Please ensure DO_GENAI_KEY and MONGODB_URI are set in the .env file")
+    exit(1)
+
+if not COHERE_API_KEY:
+    print("❌ Please ensure COHERE_API_KEY is set in the .env file")
     exit(1)
 
 # Initialize clients
@@ -22,6 +27,9 @@ client_ai = OpenAI(
     api_key=DO_GENAI_KEY,
     base_url="https://inference.do-ai.run/v1"
 )
+
+# Initialize Cohere client
+cohere_client = CohereClient(api_key=COHERE_API_KEY)
 
 try:
     client_db = MongoClient(MONGODB_URI)
@@ -36,172 +44,87 @@ class ReRanker:
     
     def __init__(self):
         self.client_ai = client_ai
+        self.cohere_client = cohere_client
     
     def embed(self, text: str) -> List[float]:
         """Generate text embedding"""
-        try:
-            resp = self.client_ai.embeddings.create(
-                model="text-embedding-3-small",
-                input=text
-            )
-            return resp.data[0].embedding
-        except Exception as e:
-            print(f"❌ Embedding generation failed: {e}")
-            return None
-    
-    def cosine_similarity(self, vec1: List[float], vec2: List[float]) -> float:
-        """Calculate cosine similarity"""
-        dot_product = sum(a * b for a, b in zip(vec1, vec2))
-        magnitude1 = math.sqrt(sum(a * a for a in vec1))
-        magnitude2 = math.sqrt(sum(a * a for a in vec2))
-        
-        if magnitude1 == 0 or magnitude2 == 0:
-            return 0
-        
-        return dot_product / (magnitude1 * magnitude2)
-    
-    def semantic_rerank(self, query: str, documents: List[Dict], top_k: int = 3) -> List[Dict]:
-        """Semantic similarity-based re-ranking"""
-        print("🔄 Executing semantic re-ranking...")
-        
-        query_embedding = self.embed(query)
-        if query_embedding is None:
-            return documents[:top_k]
-        
-        # Calculate similarity between each document and query
-        for doc in documents:
-            doc_embedding = self.embed(doc['text'])
-            if doc_embedding:
-                similarity = self.cosine_similarity(query_embedding, doc_embedding)
-                doc['semantic_score'] = similarity
-            else:
-                doc['semantic_score'] = 0
-        
-        # Sort by semantic similarity
-        reranked = sorted(documents, key=lambda x: x.get('semantic_score', 0), reverse=True)
-        
-        print(f"📊 Semantic re-ranking results:")
-        for i, doc in enumerate(reranked[:top_k], 1):
-            score = doc.get('semantic_score', 0)
-            print(f"  {i}. (semantic score: {score:.4f}) {doc['text']}")
-        
-        return reranked[:top_k]
-    
-    def llm_rerank(self, query: str, documents: List[Dict], top_k: int = 3) -> List[Dict]:
-        """LLM-based re-ranking"""
-        print("🔄 Executing LLM re-ranking...")
-        
-        # Prepare document list
-        doc_list = []
-        for i, doc in enumerate(documents):
-            doc_list.append(f"{i+1}. {doc['text']}")
-        
-        docs_text = "\n".join(doc_list)
-        
-        prompt = f"""
-Please rank the following documents by relevance to the query. Return only the ranked numbers separated by commas.
-
-Query: {query}
-
-Documents:
-{docs_text}
-
-Return the most relevant {min(top_k, len(documents))} document numbers (e.g., 3,1,5):
-"""
-        
-        try:
-            response = self.client_ai.chat.completions.create(
-                model="llama3-8b-instruct",
-                messages=[
-                    {"role": "system", "content": "You are a helpful assistant that ranks documents by relevance."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_completion_tokens=50,
-                temperature=0.1
-            )
-            
-            ranking_text = response.choices[0].message.content.strip()
-            print(f"🤖 LLM ranking result: {ranking_text}")
-            
-            # Parse ranking results
+        # Try OpenAI first if available
+        OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+        if OPENAI_API_KEY:
             try:
-                rankings = [int(x.strip()) - 1 for x in ranking_text.split(',')]  # Convert to 0-based index
-                reranked = []
-                
-                for rank in rankings:
-                    if 0 <= rank < len(documents):
-                        doc = documents[rank].copy()
-                        doc['llm_rank'] = len(reranked) + 1
-                        reranked.append(doc)
-                
-                # Add remaining documents
-                used_indices = set(rankings)
-                for i, doc in enumerate(documents):
-                    if i not in used_indices and len(reranked) < top_k:
-                        doc_copy = doc.copy()
-                        doc_copy['llm_rank'] = len(reranked) + 1
-                        reranked.append(doc_copy)
-                
-                print(f"📊 LLM re-ranking results:")
-                for i, doc in enumerate(reranked[:top_k], 1):
-                    print(f"  {i}. {doc['text']}")
-                
-                return reranked[:top_k]
-                
-            except (ValueError, IndexError) as e:
-                print(f"⚠️  LLM ranking parsing failed, using original order: {e}")
-                return documents[:top_k]
-                
+                openai_client = OpenAI(api_key=OPENAI_API_KEY)
+                resp = openai_client.embeddings.create(
+                    model="text-embedding-3-small",
+                    input=text
+                )
+                return resp.data[0].embedding
+            except Exception as e:
+                print(f"⚠️  OpenAI embedding failed: {e}")
+        
+        # Fallback to hash-based embedding for demo purposes
+        print("🔧 Using hash-based pseudo-embedding (DigitalOcean Gradient AI doesn't support embedding API)")
+        return self.embed_with_simple_hash(text)
+    
+    def embed_with_simple_hash(self, text: str) -> List[float]:
+        """Generate simple hash-based pseudo-embedding for demo purposes"""
+        import hashlib
+        import struct
+        
+        # Create hash of the text
+        hash_obj = hashlib.sha256(text.encode('utf-8'))
+        hash_bytes = hash_obj.digest()
+        
+        # Convert to 1536-dimensional vector (same as OpenAI text-embedding-3-small)
+        embedding = []
+        for i in range(0, len(hash_bytes), 2):
+            if i + 1 < len(hash_bytes):
+                # Combine two bytes and normalize to [-1, 1]
+                val = struct.unpack('H', hash_bytes[i:i+2])[0]
+                normalized_val = (val / 32767.5) - 1.0
+                embedding.append(normalized_val)
+        
+        # Pad or truncate to 1536 dimensions
+        while len(embedding) < 1536:
+            embedding.extend(embedding[:min(len(embedding), 1536 - len(embedding))])
+        
+        return embedding[:1536]
+    
+    def cohere_rerank(self, query: str, documents: List[Dict], top_k: int = 3) -> List[Dict]:
+        """Cohere re-ranking using rerank-v3.5"""
+        print("🔄 Executing Cohere re-ranking...")
+        
+        try:
+            # Prepare documents for Cohere rerank
+            doc_texts = [doc['searchable_text'] for doc in documents]
+            
+            # Call Cohere rerank API
+            rerank_response = self.cohere_client.rerank(
+                model="rerank-v3.5",
+                query=query,
+                documents=doc_texts,
+                top_n=min(len(documents), top_k)
+            )
+            
+            # Reorder results based on Cohere ranking
+            cohere_results = []
+            for result in rerank_response.results:
+                original_doc = documents[result.index].copy()
+                original_doc['cohere_score'] = result.relevance_score
+                cohere_results.append(original_doc)
+            
+            print(f"🎯 Cohere re-ranking results:")
+            for i, doc in enumerate(cohere_results, 1):
+                score = doc.get('cohere_score', 0)
+                print(f"  {i}. (Cohere score: {score:.4f}) {doc['searchable_text'][:100]}...")
+            
+            return cohere_results
+            
         except Exception as e:
-            print(f"❌ LLM re-ranking failed: {e}")
+            print(f"❌ Cohere re-ranking failed: {e}")
+            print("  Falling back to original order...")
             return documents[:top_k]
     
-    def hybrid_rerank(self, query: str, documents: List[Dict], top_k: int = 3) -> List[Dict]:
-        """Hybrid re-ranking: combining vector search scores, semantic similarity and LLM ranking"""
-        print("🔄 Executing hybrid re-ranking...")
-        
-        # 1. Semantic similarity
-        query_embedding = self.embed(query)
-        if query_embedding:
-            for doc in documents:
-                doc_embedding = self.embed(doc['text'])
-                if doc_embedding:
-                    semantic_score = self.cosine_similarity(query_embedding, doc_embedding)
-                    doc['semantic_score'] = semantic_score
-                else:
-                    doc['semantic_score'] = 0
-        
-        # 2. Normalize scores
-        vector_scores = [doc.get('score', 0) for doc in documents]
-        semantic_scores = [doc.get('semantic_score', 0) for doc in documents]
-        
-        # Min-Max normalization
-        def normalize_scores(scores):
-            if not scores or max(scores) == min(scores):
-                return [0.5] * len(scores)
-            min_score, max_score = min(scores), max(scores)
-            return [(s - min_score) / (max_score - min_score) for s in scores]
-        
-        norm_vector = normalize_scores(vector_scores)
-        norm_semantic = normalize_scores(semantic_scores)
-        
-        # 3. Calculate hybrid score
-        for i, doc in enumerate(documents):
-            # Weights: vector search 40%, semantic similarity 60%
-            hybrid_score = 0.4 * norm_vector[i] + 0.6 * norm_semantic[i]
-            doc['hybrid_score'] = hybrid_score
-        
-        # 4. Sort
-        reranked = sorted(documents, key=lambda x: x.get('hybrid_score', 0), reverse=True)
-        
-        print(f"📊 Hybrid re-ranking results:")
-        for i, doc in enumerate(reranked[:top_k], 1):
-            vector_score = doc.get('score', 0)
-            semantic_score = doc.get('semantic_score', 0)
-            hybrid_score = doc.get('hybrid_score', 0)
-            print(f"  {i}. (hybrid: {hybrid_score:.4f}, vector: {vector_score:.4f}, semantic: {semantic_score:.4f}) {doc['text']}")
-        
-        return reranked[:top_k]
+
 
 def initial_search(query: str, k: int = 6) -> List[Dict]:
     """Perform initial vector search"""
@@ -229,7 +152,7 @@ def initial_search(query: str, k: int = 6) -> List[Dict]:
         {
             "$project": {
                 "_id": 0,
-                "text": 1,
+                "searchable_text": 1,
                 "score": {"$meta": "vectorSearchScore"}
             }
         }
@@ -244,7 +167,7 @@ def initial_search(query: str, k: int = 6) -> List[Dict]:
         
         print(f"📋 Found {len(results)} documents:")
         for i, doc in enumerate(results, 1):
-            print(f"  {i}. (score: {doc['score']:.4f}) {doc['text']}")
+            print(f"  {i}. (score: {doc['score']:.4f}) {doc['searchable_text']}")
         
         return results
         
@@ -253,7 +176,7 @@ def initial_search(query: str, k: int = 6) -> List[Dict]:
         return []
 
 def compare_rankings(query: str):
-    """Compare different re-ranking methods"""
+    """Compare original vector search vs Cohere re-ranking"""
     print(f"\n{'='*60}")
     print(f"🎯 Re-ranking Comparison for Query: '{query}'")
     print(f"{'='*60}")
@@ -265,28 +188,31 @@ def compare_rankings(query: str):
     
     reranker = ReRanker()
     
-    # 1. Original ranking
-    print(f"\n1️⃣ Original Vector Search Results:")
+    # 1. Original vector search results
+    print(f"\n📊 Original Vector Search Results:")
     for i, doc in enumerate(documents[:3], 1):
-        print(f"  {i}. (score: {doc['score']:.4f}) {doc['text']}")
+        print(f"  {i}. (score: {doc['score']:.4f}) {doc['searchable_text'][:100]}...")
     
-    # 2. Semantic re-ranking
-    print(f"\n2️⃣ Semantic Re-ranking:")
-    semantic_results = reranker.semantic_rerank(query, documents.copy(), top_k=3)
+    # 2. Cohere re-ranking
+    print(f"\n🎯 Enhanced with Cohere Re-ranking:")
+    cohere_results = reranker.cohere_rerank(query, documents.copy(), top_k=3)
     
-    # 3. LLM re-ranking
-    print(f"\n3️⃣ LLM Re-ranking:")
-    llm_results = reranker.llm_rerank(query, documents.copy(), top_k=3)
-    
-    # 4. Hybrid re-ranking
-    print(f"\n4️⃣ Hybrid Re-ranking:")
-    hybrid_results = reranker.hybrid_rerank(query, documents.copy(), top_k=3)
+    # Comparison summary
+    print(f"\n📊 Re-ranking Comparison Summary:")
+    print(f"   🔹 Original Vector Search: Top result has score {documents[0]['score']:.4f}")
+    if cohere_results and cohere_results[0].get('cohere_score'):
+        print(f"   🔹 Cohere Re-ranking: Top result has score {cohere_results[0]['cohere_score']:.4f}")
+        if cohere_results[0]['searchable_text'] != documents[0]['searchable_text']:
+            print(f"   ✨ Re-ranking changed the top result!")
+        else:
+            print(f"   ✅ Re-ranking confirmed the top result")
     
     print(f"\n{'='*60}")
 
 def interactive_demo():
-    """Interactive re-ranking demo"""
-    print("\n🎯 Interactive Re-ranking Demo")
+    """Interactive re-ranking comparison demo"""
+    print("\n🎯 Interactive Re-ranking Comparison Demo")
+    print("📊 Compare Original Vector Search vs Cohere Re-ranking")
     print("💡 You can ask questions about support tickets, for example:")
     print("   - What login issues do we have?")
     print("   - What payment problems exist?")
@@ -306,7 +232,8 @@ def interactive_demo():
 
 def main():
     """Main function"""
-    print("🚀 Re-ranking Demo System")
+    print("🚀 Re-ranking Comparison Demo")
+    print("📊 Vector Search vs Cohere Re-ranking")
     print("=" * 50)
     
     # Check data

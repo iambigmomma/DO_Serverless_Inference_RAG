@@ -1,76 +1,83 @@
-# setup.py - 快速設置腳本
+# setup.py - Quick Setup Script
 import os
 import subprocess
 import sys
 
 def install_dependencies():
-    """安裝依賴包"""
-    print("📦 安裝 Python 依賴包...")
+    """Install dependencies"""
+    print("📦 Installing Python dependencies...")
     try:
         subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", "requirements.txt"])
-        print("✅ 依賴包安裝成功!")
+        print("✅ Dependencies installed successfully!")
         return True
     except subprocess.CalledProcessError as e:
-        print(f"❌ 依賴包安裝失敗: {e}")
+        print(f"❌ Dependency installation failed: {e}")
         return False
 
 def create_env_file():
-    """Create .env file with environment variables"""
-    env_content = """# DigitalOcean GenAI Platform API Key
-DO_GENAI_KEY=your_digitalocean_genai_api_key_here
+    """Create environment variables file"""
+    env_content = """# DigitalOcean Gradient AI Platform API Key
+DO_GENAI_KEY=please_enter_your_digitalocean_gradient_ai_api_key
 
-# OpenAI API Key (for embeddings)
-OPENAI_API_KEY=your_openai_api_key_here
+# OpenAI API Key (for embedding generation)
+OPENAI_API_KEY=please_enter_your_openai_api_key
 
 # MongoDB Atlas Connection String
-MONGODB_URI=your_mongodb_atlas_connection_string_here
+MONGODB_URI=please_enter_your_mongodb_atlas_connection_string
 """
     
     if not os.path.exists('.env'):
-        with open('.env', 'w') as f:
+        with open('.env', 'w', encoding='utf-8') as f:
             f.write(env_content)
-        print("✅ Created .env file")
+        print("✅ Created .env environment variables file")
     else:
         print("ℹ️  .env file already exists")
 
 def show_next_steps():
-    """顯示後續步驟"""
+    """Show next steps"""
     print("\n" + "=" * 60)
-    print("🎉 設置完成!")
+    print("🎉 Initial setup completed!")
     print("=" * 60)
-    print("📋 後續步驟:")
-    print("1. 編輯 .env 文件，填入您的憑證:")
-    print("   - DO_GENAI_KEY: DigitalOcean GenAI Platform API Key")
-    print("   - MONGODB_URI: MongoDB Atlas 連接字串")
+    print("📋 Please follow these steps next:")
     print()
-    print("2. 在 MongoDB Atlas 中:")
-    print("   - 創建資料庫: ai_demo")
-    print("   - 創建集合: tickets")
-    print("   - 創建 Vector Search Index (運行 demo.py 查看配置)")
+    print("1. 📝 Edit the .env file and fill in your API credentials:")
+    print("   - DO_GENAI_KEY: DigitalOcean Gradient AI Platform API Key")
+    print("   - OPENAI_API_KEY: OpenAI API Key")
+    print("   - MONGODB_URI: MongoDB Atlas Connection String")
     print()
-    print("3. 運行演示:")
+    print("2. 🗄️  Set up in MongoDB Atlas:")
+    print("   - Create database: ai_demo")
+    print("   - Create collection: tickets")
+    print("   - Create Vector Search Index (run demo.py to see detailed configuration)")
+    print()
+    print("3. 🚀 Run complete demo:")
     print("   python demo.py")
     print()
-    print("4. 或分步運行:")
-    print("   python 0_test_endpoint.py  # 測試連接")
-    print("   python 1_ingest.py         # 數據攝取")
-    print("   python 2_query.py          # RAG 查詢")
-    print("   python 3_change_streams.py # 實時監聽")
+    print("4. 🔧 Or run step by step:")
+    print("   python 0_test_endpoint.py  # Test API connections")
+    print("   python 1_ingest.py         # Data ingestion and vectorization")
+    print("   python 2_query.py          # RAG query testing")
+    print("   python 3_change_streams.py # Real-time data monitoring")
+    print()
+    print("💡 Tips: If you encounter connection issues, please check:")
+    print("   - API keys are correct")
+    print("   - Network connection is working")
+    print("   - MongoDB Atlas whitelist settings")
     print("=" * 60)
 
 def main():
-    print("🚀 Atlas Vector Search + DigitalOcean RAG Demo 設置")
+    print("🚀 Atlas Vector Search + DigitalOcean RAG Demo System Setup")
     print("=" * 60)
     
-    # 安裝依賴
+    # Install dependencies
     if not install_dependencies():
+        print("❌ Installation failed, please check network connection or requirements.txt file")
         return
     
-    # 創建環境變數文件
-    if not create_env_file():
-        return
+    # Create environment variables file
+    create_env_file()
     
-    # 顯示後續步驟
+    # Show next steps
     show_next_steps()
 
 if __name__ == "__main__":

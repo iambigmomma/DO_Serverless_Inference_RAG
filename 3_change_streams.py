@@ -1,4 +1,4 @@
-# 3_change_streams.py
+# 3_change_streams.py - Real-time Data Monitoring with Change Streams
 import os
 import time
 from openai import OpenAI
@@ -150,9 +150,9 @@ def watch_changes():
 def insert_sample_question():
     """Insert sample questions for testing"""
     sample_questions = [
-        "What is the capital of France?",
-        "Which city is the capital of Japan?",
-        "Tell me about European capitals.",
+        "What login issues do we have?",
+        "What payment problems exist?",
+        "What are the high priority tickets?",
     ]
     
     print("🧪 Inserting test questions...")

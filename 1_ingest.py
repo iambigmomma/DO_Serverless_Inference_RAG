@@ -1,4 +1,4 @@
-# 1_ingest.py
+# 1_ingest.py - Data Ingestion and Vectorization Script
 import os
 import sys
 from openai import OpenAI
@@ -9,35 +9,35 @@ import json
 # Load environment variables
 load_dotenv()
 
-# Configuration
+# Configuration settings
 DO_GENAI_KEY = os.getenv("DO_GENAI_KEY")
 MONGODB_URI = os.getenv("MONGODB_URI")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")  # Added OpenAI API Key
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")  # Added OpenAI API key
 
 if not DO_GENAI_KEY:
-    print("❌ Error: DO_GENAI_KEY not found in environment variables")
-    print("Please add your DigitalOcean GenAI Platform API Key to the .env file")
+    print("❌ Error: DO_GENAI_KEY environment variable not found")
+    print("Please add your DigitalOcean Gradient AI Platform API key to the .env file")
     sys.exit(1)
 
 if not MONGODB_URI:
-    print("❌ Error: MONGODB_URI not found in environment variables")
+    print("❌ Error: MONGODB_URI environment variable not found")
     print("Please add your MongoDB Atlas connection string to the .env file")
     sys.exit(1)
 
 if not OPENAI_API_KEY:
-    print("❌ Error: OPENAI_API_KEY not found in environment variables")
-    print("Please add your OpenAI API Key to the .env file")
+    print("❌ Error: OPENAI_API_KEY environment variable not found")
+    print("Please add your OpenAI API key to the .env file")
     sys.exit(1)
 
 # Initialize clients
 try:
-    # DigitalOcean client for chat
+    # DigitalOcean client (for chat)
     do_client = OpenAI(
         api_key=DO_GENAI_KEY,
         base_url="https://inference.do-ai.run/v1"
     )
     
-    # OpenAI client for embeddings
+    # OpenAI client (for embeddings)
     openai_client = OpenAI(api_key=OPENAI_API_KEY)
     
     # MongoDB client
@@ -52,7 +52,7 @@ except Exception as e:
     sys.exit(1)
 
 def generate_embedding(text):
-    """Generate embedding using OpenAI API"""
+    """Generate embedding vector using OpenAI API"""
     try:
         response = openai_client.embeddings.create(
             model="text-embedding-3-small",
@@ -70,7 +70,7 @@ def load_sample_data():
     
     if not os.path.exists(sample_data_dir):
         print(f"❌ {sample_data_dir} directory not found!")
-        print("Please create the SAMPLE_DATA directory and add JSON files with ticket data.")
+        print("Please create the SAMPLE_DATA directory and add JSON files containing ticket data.")
         return []
     
     # Find all JSON files in SAMPLE_DATA directory
@@ -78,10 +78,10 @@ def load_sample_data():
     
     if not json_files:
         print(f"❌ No JSON files found in {sample_data_dir} directory!")
-        print("Please add JSON files with ticket data to the SAMPLE_DATA directory.")
+        print("Please add JSON files containing ticket data to the SAMPLE_DATA directory.")
         return []
     
-    print(f"📁 Found {len(json_files)} JSON file(s): {', '.join(json_files)}")
+    print(f"📁 Found {len(json_files)} JSON files: {', '.join(json_files)}")
     
     # Load data from each JSON file
     for json_file in json_files:
@@ -101,7 +101,7 @@ def load_sample_data():
     return all_tickets
 
 def ingest_sample_data():
-    """Ingest sample support tickets with embeddings from JSON files"""
+    """Ingest sample support tickets from JSON files and generate embeddings"""
     
     print("🔄 Starting data ingestion from SAMPLE_DATA directory...")
     
@@ -141,7 +141,7 @@ def ingest_sample_data():
                 print(f"✅ Inserted: {ticket.get('ticket_id', ticket.get('_id', 'Unknown ID'))}")
                 successful_inserts += 1
             else:
-                print(f"❌ Skipping {ticket.get('ticket_id', 'Unknown')} due to embedding failure")
+                print(f"❌ Skipping {ticket.get('ticket_id', 'Unknown')} due to embedding generation failure")
                 failed_inserts += 1
                 
         except Exception as e:
@@ -186,10 +186,10 @@ if __name__ == "__main__":
     mongo_client.close()
     print("🔒 Database connection closed")
 
-    print("\n📋 Next Steps:")
+    print("\n📋 Next steps:")
     print("1. Create Vector Search Index in MongoDB Atlas")
     print("2. Run 'python 2_query.py' for query testing")
-    print("\n💡 Vector Search Index Configuration:")
+    print("\n💡 Vector Search Index configuration:")
     print("""
 {
     "mappings": {

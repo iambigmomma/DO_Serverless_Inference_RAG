@@ -1,4 +1,4 @@
-# 2_query.py
+# 2_query.py - RAG Query Testing Script
 import os
 import sys
 from openai import OpenAI
@@ -122,12 +122,12 @@ Please provide a helpful response based on the relevant tickets above. If the qu
 
     try:
         response = do_client.chat.completions.create(
-            model="llama3.3-70b-instruct",
+            model="llama3-8b-instruct",
             messages=[
                 {"role": "user", "content": prompt}
             ],
             temperature=0.7,
-            max_tokens=500,
+            max_completion_tokens=500,
             stream=True
         )
         
