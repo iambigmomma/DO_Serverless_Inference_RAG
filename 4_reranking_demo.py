@@ -126,6 +126,20 @@ class ReRanker:
     
 
 
+def show_sample_questions():
+    """Display sample questions for easy copy-paste"""
+    print("\n💡 Sample Questions (copy and paste):")
+    print("   1. What login issues do we have?")
+    print("   2. What payment problems exist?")
+    print("   3. What are the high priority issues?")
+    print("   4. What mobile app crashes are reported?")
+    print("   5. What security vulnerabilities need attention?")
+    print("   6. What feature requests are pending?")
+    print("   7. What network connectivity problems exist?")
+    print("   8. What database errors are occurring?")
+    print("   9. What UI/UX issues need fixing?")
+    print("   10. What performance problems are reported?")
+
 def initial_search(query: str, k: int = 6) -> List[Dict]:
     """Perform initial vector search"""
     print(f"🔍 Performing initial vector search for: '{query}'")
@@ -213,10 +227,8 @@ def interactive_demo():
     """Interactive re-ranking comparison demo"""
     print("\n🎯 Interactive Re-ranking Comparison Demo")
     print("📊 Compare Original Vector Search vs Cohere Re-ranking")
-    print("💡 You can ask questions about support tickets, for example:")
-    print("   - What login issues do we have?")
-    print("   - What payment problems exist?")
-    print("   - What are the high priority issues?")
+    
+    show_sample_questions()
     print("\nType 'quit' to exit")
     
     while True:
@@ -229,6 +241,7 @@ def interactive_demo():
             continue
         
         compare_rankings(query)
+        show_sample_questions()  # Show sample questions again after each query
 
 def main():
     """Main function"""
@@ -256,6 +269,9 @@ def main():
             "payment issues", 
             "mobile app crashes"
         ]
+        
+        print("\n🚀 Running quick test with sample queries...")
+        show_sample_questions()
         
         for query in sample_queries:
             compare_rankings(query)

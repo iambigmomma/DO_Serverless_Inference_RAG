@@ -148,11 +148,27 @@ Please provide a helpful response based on the relevant tickets above. If the qu
         print(f"❌ RAG response generation failed: {e}")
         return None
 
+def show_sample_questions():
+    """Display sample questions for easy copy-paste"""
+    print("\n💡 Sample Questions (copy and paste):")
+    print("   1. What login issues do we have?")
+    print("   2. What payment problems exist?")
+    print("   3. What are the high priority issues?")
+    print("   4. What mobile app crashes are reported?")
+    print("   5. What security vulnerabilities need attention?")
+    print("   6. What feature requests are pending?")
+    print("   7. What network connectivity problems exist?")
+    print("   8. What database errors are occurring?")
+    print("   9. What UI/UX issues need fixing?")
+    print("   10. What performance problems are reported?")
+
 def interactive_query():
     """Interactive query interface"""
     print("\n🔍 RAG Query System")
     print("=" * 50)
     print("Enter your queries (type 'quit' to exit)")
+    
+    show_sample_questions()
     
     while True:
         query = input("\n💬 Your question: ").strip()
@@ -183,6 +199,9 @@ def interactive_query():
         # Generate RAG response
         print(f"\n🤖 Generating response...")
         rag_response = generate_rag_response(query, results)
+        
+        # Show sample questions again after each query
+        show_sample_questions()
 
 if __name__ == "__main__":
     # Check if data exists

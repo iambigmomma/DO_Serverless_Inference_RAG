@@ -11,6 +11,7 @@ A comprehensive multi-provider RAG demo showcasing enterprise-grade AI integrati
 - **🔍 Simple Comparison**: Clear before/after comparison of search quality with re-ranking
 - **🎫 Support Ticket Processing**: Realistic customer support ticket data scenarios
 - **💻 Interactive Demo**: Command-line interface for testing different AI functionalities
+- **📝 Sample Questions**: Built-in sample questions that appear after each query for easy copy-paste
 - **📁 Flexible Data Management**: JSON-based sample data for easy customization
 
 ## Prerequisites
@@ -43,6 +44,7 @@ A comprehensive multi-provider RAG demo showcasing enterprise-grade AI integrati
    ```env
    DO_GENAI_KEY=your_digitalocean_gradient_ai_api_key_here
    MONGODB_URI=your_mongodb_atlas_connection_string_here
+   COHERE_API_KEY=your_cohere_api_key_here
    OPENAI_API_KEY=your_openai_api_key_here
    ```
 
@@ -108,8 +110,20 @@ You can add your own JSON files to the `SAMPLE_DATA` directory. Each file should
    - Display statistics about the ingested data
 
 2. **Query Testing**
+
    ```bash
    python 2_query.py
+   ```
+
+3. **Test Cohere Integration**
+
+   ```bash
+   python test_cohere.py
+   ```
+
+4. **Re-ranking Comparison Demo**
+   ```bash
+   python 4_reranking_demo.py
    ```
 
 ### Method 2: Interactive Demo
@@ -140,13 +154,24 @@ The demo includes four different search and re-ranking approaches:
 
 ## Sample Queries
 
-Try these example queries to test the system:
+The system now provides built-in sample questions that appear during interactive sessions for easy copy-paste:
 
-- "Login problems and authentication issues"
-- "Payment processing errors and billing"
-- "Mobile app crashes and performance"
-- "Security vulnerabilities and data breaches"
-- "Feature requests and UI improvements"
+1. **What login issues do we have?**
+2. **What payment problems exist?**
+3. **What are the high priority issues?**
+4. **What mobile app crashes are reported?**
+5. **What security vulnerabilities need attention?**
+6. **What feature requests are pending?**
+7. **What network connectivity problems exist?**
+8. **What database errors are occurring?**
+9. **What UI/UX issues need fixing?**
+10. **What performance problems are reported?**
+
+These sample questions will automatically appear:
+
+- At the start of each interactive session
+- After every query you submit
+- Making it easy to copy and paste new questions for testing
 
 ## Project Structure
 
@@ -155,6 +180,8 @@ Serverless_Inference_RAG/
 ├── demo.py                 # Main interactive demo
 ├── 1_ingest.py            # Data ingestion script
 ├── 2_query.py             # Query testing script
+├── 4_reranking_demo.py    # Re-ranking comparison demo
+├── test_cohere.py         # Cohere API integration test
 ├── requirements.txt       # Python dependencies
 ├── .env                   # Environment variables (create this)
 ├── .gitignore            # Git ignore rules
@@ -178,6 +205,12 @@ Serverless_Inference_RAG/
 2. Enable Vector Search
 3. Get your connection string
 4. Add it to your `.env` file as `MONGODB_URI`
+
+### Cohere API
+
+1. Sign up for [Cohere](https://cohere.com/)
+2. Generate an API key
+3. Add it to your `.env` file as `COHERE_API_KEY`
 
 ### OpenAI API
 

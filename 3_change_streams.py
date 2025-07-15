@@ -62,11 +62,11 @@ def search_and_answer(question: str, doc_id: str):
                     "k": 3
                 }
             },
-            {"$project": {"text": 1, "_id": 0}}
+            {"$project": {"searchable_text": 1, "_id": 0}}
         ]
         
         results = list(col.aggregate(pipeline))
-        contexts = [doc["text"] for doc in results]
+        contexts = [doc["searchable_text"] for doc in results]
         
         if not contexts:
             return "Sorry, no relevant information found."

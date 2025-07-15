@@ -6,6 +6,7 @@ from typing import List, Dict
 from openai import OpenAI
 from pymongo import MongoClient
 from dotenv import load_dotenv
+from cohere import ClientV2 as CohereClient
 
 # Load environment variables
 load_dotenv()
@@ -29,6 +30,9 @@ client_ai = OpenAI(
     base_url="https://inference.do-ai.run/v1"
 )
 
+# Initialize Cohere client
+cohere_client = CohereClient(api_key=COHERE_API_KEY)
+
 try:
     client_db = MongoClient(MONGODB_URI)
     client_db.admin.command('ping')
@@ -41,6 +45,7 @@ except Exception as e:
 class RAGDemo:
     def __init__(self):
         self.client_ai = client_ai
+        self.cohere_client = cohere_client
         self.col = col
     
     def embed(self, text: str) -> List[float]:
@@ -122,6 +127,18 @@ class RAGDemo:
                 print(f"❌ OpenAI connection failed: {e}")
         else:
             print("⚠️  OpenAI API key not configured")
+        
+        # Test Cohere
+        try:
+            test_response = self.cohere_client.rerank(
+                model="rerank-v3.5",
+                query="test query",
+                documents=["test document 1", "test document 2"],
+                top_n=1
+            )
+            print("✅ Cohere connection successful")
+        except Exception as e:
+            print(f"❌ Cohere connection failed: {e}")
     
     def ingest_data(self):
         """Read JSON files from SAMPLE_DATA directory and ingest into database"""
@@ -198,7 +215,7 @@ class RAGDemo:
                     "category": ticket.get("category"),
                     "priority": ticket.get("priority"),
                     "status": ticket.get("status"),
-                    "text": searchable_text,
+                    "searchable_text": searchable_text,
                     "embedding": embedding
                 }
                 
@@ -242,6 +259,20 @@ class RAGDemo:
         except Exception as e:
             print(f"❌ Failed to generate statistics: {e}")
     
+    def show_sample_questions(self):
+        """Display sample questions for easy copy-paste"""
+        print("\n💡 Sample Questions (copy and paste):")
+        print("   1. What login issues do we have?")
+        print("   2. What payment problems exist?")
+        print("   3. What are the high priority issues?")
+        print("   4. What mobile app crashes are reported?")
+        print("   5. What security vulnerabilities need attention?")
+        print("   6. What feature requests are pending?")
+        print("   7. What network connectivity problems exist?")
+        print("   8. What database errors are occurring?")
+        print("   9. What UI/UX issues need fixing?")
+        print("   10. What performance problems are reported?")
+    
     def rag_query(self, query: str, k: int = 3) -> str:
         """Execute RAG query"""
         print(f"\n🔍 Searching for: '{query}'")
@@ -271,7 +302,7 @@ class RAGDemo:
                     "category": 1,
                     "priority": 1,
                     "status": 1,
-                    "text": 1,
+                    "searchable_text": 1,
                     "score": {"$meta": "vectorSearchScore"}
                 }
             }
@@ -331,6 +362,8 @@ Please provide a helpful and accurate answer based on the ticket information:"""
         
         print(f"✅ Data ingestion completed, vector search index created")
         print(f"📊 Found {doc_count} documents in database")
+        
+        self.show_sample_questions()
         
         while True:
             query = input("\n💬 Please enter your question (or type 'quit' to exit): ").strip()
@@ -452,6 +485,9 @@ Please provide a helpful and accurate answer:"""
                 
             except Exception as e:
                 print(f"❌ Search failed: {e}")
+            
+            # Show sample questions again after each query
+            self.show_sample_questions()
     
     def show_vector_index_config(self):
         """Display vector index configuration"""
@@ -503,6 +539,7 @@ def main():
         elif choice == "2":
             demo.ingest_data()
         elif choice == "3":
+            demo.show_sample_questions()
             while True:
                 query = input("\n💬 Please enter your question (or type 'quit' to return to main menu): ").strip()
                 if query.lower() in ['quit', 'exit', 'q']:
@@ -510,6 +547,7 @@ def main():
                 if query:
                     result = demo.rag_query(query)
                     print(f"\n🤖 Answer:\n{result}")
+                    demo.show_sample_questions()  # Show sample questions again after each query
         elif choice == "4":
             demo.reranking_demo()
         elif choice == "5":
